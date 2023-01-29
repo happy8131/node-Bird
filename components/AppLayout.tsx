@@ -32,7 +32,7 @@ const Global = createGlobalStyle`
 
 const AppLayout = ({ children }: Props) => {
   // const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const isLoggedIn = useSelector((state) => state.user.isLoggedIn);
+  const { me } = useSelector((state) => state.user);
   return (
     <div>
       <Global />
@@ -52,7 +52,7 @@ const AppLayout = ({ children }: Props) => {
       </Menu>
       <Row>
         <Col xs={24} md={6}>
-          {isLoggedIn ? <UserProfile /> : <LoginForm />}
+          {me ? <UserProfile /> : <LoginForm />}
         </Col>
         <Col xs={24} md={12}>
           {children}
