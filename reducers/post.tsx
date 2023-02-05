@@ -1,4 +1,5 @@
 import shortId from "shortid";
+import faker from "faker";
 import produce from "immer";
 
 export const initialState = {
@@ -55,6 +56,33 @@ export const initialState = {
   addCommentDone: false,
   addCommentError: null,
 };
+faker.seed(123);
+initialState.mainPosts = initialState.mainPosts.concat(
+  Array(20)
+    .fill()
+    .map(() => ({
+      id: shortId.generate(),
+      User: {
+        id: shortId.generate(),
+        nickname: faker.name.findName(),
+      },
+      content: faker.lorem.paragraph(),
+      Images: [
+        {
+          src: faker.image.imageUrl(),
+        },
+      ],
+      Comments: [
+        {
+          User: {
+            id: shortId.generate(),
+            nickname: faker.name.findName(),
+          },
+          content: faker.lorem.sentence(),
+        },
+      ],
+    }))
+);
 
 export const ADD_POST_REQUEST = "ADD_POST_REQUEST";
 export const ADD_POST_SUCCESS = "ADD_POST_SUCCESS";
