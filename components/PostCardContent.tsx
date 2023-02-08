@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 const PostCardContent = ({ postData }) => {
-  console.log(postData);
+  // console.log(postData);
   return (
     <div>
       {postData
