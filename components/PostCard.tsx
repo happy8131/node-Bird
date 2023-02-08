@@ -27,7 +27,7 @@ const PostCard = ({ post }) => {
   const onToggleComment = useCallback(() => {
     setCommentFormOpened((prev) => !prev);
   }, []);
-  console.log(post.Comments);
+  // console.log(post.Comments);
 
   const onRemovePost = useCallback(() => {
     dispatch({
