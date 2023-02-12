@@ -33,23 +33,20 @@ const Global = createGlobalStyle`
 const AppLayout = ({ children }: Props) => {
   // const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { me } = useSelector((state) => state.user);
+
   return (
     <div>
       <Global />
-      <Menu mode="horizontal">
-        <Menu.Item key="item">
-          <Link href="/">노드버드</Link>
-        </Menu.Item>
-        <Menu.Item key="item2">
-          <Link href="/profile">프로필</Link>
-        </Menu.Item>
-        <Menu.Item key="item3">
-          <SearchInput enterButton />
-        </Menu.Item>
-        <Menu.Item key="item4">
-          <Link href="/signup">회원가입</Link>
-        </Menu.Item>
-      </Menu>
+      <Menu
+        items={[
+          { label: <Link href="/">노드버드</Link>, key: "/" },
+          { label: <Link href="/profile">프로필</Link>, key: "/profile" },
+          { label: <SearchInput enterButton />, key: "/search" },
+          { label: <Link href="/signup">회원가입</Link>, key: "/signup" },
+        ]}
+        mode="horizontal"
+      />
+
       <Row>
         <Col xs={24} md={6}>
           {me ? <UserProfile /> : <LoginForm />}
