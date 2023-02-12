@@ -11,6 +11,7 @@ import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { REMOVE_POST_REQUEST } from "../reducers/post";
 import CommentForm from "./CommentForm";
+import FollowButton from "./FollowButton";
 import PostCardContent from "./PostCardContent";
 import PostImages from "./PostImages";
 
@@ -19,7 +20,6 @@ const PostCard = ({ post }) => {
   const { removePostLoading } = useSelector((state) => state.post);
   const [liked, setLiked] = useState(false);
   const [commentFormOpened, setCommentFormOpened] = useState(false);
-  const id = useSelector((state) => state.user.me?.id);
 
   const onToggleLike = useCallback(() => {
     setLiked((prev) => !prev);
@@ -35,6 +35,9 @@ const PostCard = ({ post }) => {
       data: post.id,
     });
   }, []);
+
+  const id = useSelector((state) => state.user.me?.id);
+
   return (
     <div style={{ marginBottom: 20 }}>
       <Card
@@ -75,9 +78,10 @@ const PostCard = ({ post }) => {
             <EllipsisOutlined />
           </Popover>,
         ]}
+        extra={id && <FollowButton post={post} />}
       >
         <Card.Meta
-          avatar={<Avatar>{post.User?.nickname}</Avatar>}
+          avatar={<Avatar>{post.User?.nickname[0]}</Avatar>}
           title={post.User.nickname}
           description={<PostCardContent postData={post.content} />}
         />
@@ -86,7 +90,7 @@ const PostCard = ({ post }) => {
         <div>
           <CommentForm post={post} />
           <List
-            style={{ maring: 0 }}
+            style={{ margin: 0 }}
             header={`${post.Comments.length}개의 댓글`}
             itemLayout="horizontal"
             dataSource={post.Comments}

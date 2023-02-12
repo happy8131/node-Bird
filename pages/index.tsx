@@ -43,7 +43,7 @@ export default function Home() {
 
   return (
     <AppLayout>
-      {me && <PostForm />}
+      {me ? <PostForm /> : null}
       {mainPosts.map((post) => (
         <PostCard key={post.id} post={post} />
       ))}

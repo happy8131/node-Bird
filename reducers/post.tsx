@@ -1,6 +1,7 @@
 import shortId from "shortid";
 import faker from "faker";
 import produce from "immer";
+import uuid from "react-uuid";
 
 export const initialState = {
   mainPosts: [],
@@ -24,9 +25,10 @@ export const generateDummyPost = (number: number) =>
   Array(number)
     .fill()
     .map(() => ({
-      id: shortId.generate(),
+      id: uuid(),
       User: {
         id: shortId.generate(),
+
         nickname: faker.name.findName(),
       },
       content: faker.lorem.paragraph(),
@@ -38,9 +40,11 @@ export const generateDummyPost = (number: number) =>
       Comments: [
         {
           User: {
-            id: shortId.generate(),
+            id: uuid(),
+
             nickname: faker.name.findName(),
           },
+
           content: faker.lorem.sentence(),
         },
       ],
@@ -106,7 +110,7 @@ const reducer = (state = initialState, action) => {
       case LOAD_POSTS_SUCCESS:
         draft.loadPostLoading = false;
         draft.loadPostDone = true;
-        draft.mainPosts = action.data.concat(action.data);
+        draft.mainPosts = action.data.concat(draft.mainPosts);
         draft.hasMorePosts = draft.mainPosts.length < 50;
         break;
       case LOAD_POSTS_FAIL:

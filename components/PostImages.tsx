@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { PlusOutlined } from "@ant-design/icons";
 import { useCallback, useState } from "react";
 import ImagesZoom from "./imagesZoom";
@@ -5,9 +6,9 @@ import ImagesZoom from "./imagesZoom";
 const PostImages = ({ images }) => {
   const [showImagesZoom, setShowImagesZoom] = useState(false);
 
-  const onZoom = useCallback(() => {
+  const onZoom = () => {
     setShowImagesZoom(true);
-  }, []);
+  };
 
   const onClose = useCallback(() => {
     setShowImagesZoom(false);
