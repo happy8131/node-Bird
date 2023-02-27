@@ -11,13 +11,25 @@ import { SIGN_UP_REQUEST } from "../reducers/user";
 
 const Signup = () => {
   const dispatch = useDispatch();
-  const { signUpLoading, signUpDone, signUpError } = useSelector(
+  const { signUpLoading, signUpDone, signUpError, me } = useSelector(
     (state) => state.user
   );
 
   useEffect(() => {
+    if (me && me.id) {
+      console.log("wwwd");
+      Router.replace("/");
+    }
+  }, [me && me.id]);
+
+  if (!me) {
+    return null;
+  }
+
+  useEffect(() => {
     if (signUpDone) {
-      Router.push("/");
+      console.log("zzss");
+      Router.replace("/");
     }
   }, [signUpDone]);
 
