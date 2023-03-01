@@ -17,18 +17,12 @@ const Signup = () => {
 
   useEffect(() => {
     if (me && me.id) {
-      console.log("wwwd");
       Router.replace("/");
     }
   }, [me && me.id]);
 
-  if (!me) {
-    return null;
-  }
-
   useEffect(() => {
     if (signUpDone) {
-      console.log("zzss");
       Router.replace("/");
     }
   }, [signUpDone]);
@@ -85,7 +79,7 @@ const Signup = () => {
           <br />
           <Input
             name="user-email"
-            type={email}
+            type="email"
             value={email}
             required
             onChange={onChangeEmail}
