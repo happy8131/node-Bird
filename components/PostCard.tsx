@@ -58,7 +58,7 @@ const PostCard = ({ post }) => {
             key="more"
             content={
               <Button.Group>
-                {id && post.User.id === id ? (
+                {id && post.User?.id === id ? (
                   <>
                     <Button>수정</Button>
                     <Button
