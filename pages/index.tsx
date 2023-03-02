@@ -8,6 +8,7 @@ import PostCard from "../components/PostCard";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { LOAD_POSTS_REQUEST } from "../reducers/post";
+import { LOAD_USER_REQUEST } from "../reducers/user";
 
 export default function Home() {
   const dispatch = useDispatch();
@@ -16,6 +17,9 @@ export default function Home() {
     (state) => state.post
   );
   useEffect(() => {
+    dispatch({
+      type: LOAD_USER_REQUEST,
+    });
     dispatch({
       type: LOAD_POSTS_REQUEST,
     });
