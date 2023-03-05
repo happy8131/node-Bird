@@ -51,7 +51,6 @@ const PostCard = ({ post }) => {
   }, []);
 
   const id = useSelector((state) => state.user.me?.id);
-
   const liked = post.Likers.find((v) => v.id === id);
 
   return (

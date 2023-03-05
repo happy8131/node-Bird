@@ -58,13 +58,10 @@ function addPostAPI(data) {
 function* addPost(action) {
   try {
     const result = yield call(addPostAPI, action.data);
-    const id = shortid.generate();
+
     yield put({
       type: ADD_POST_SUCCESS,
-      data: {
-        id,
-        data: result.data,
-      },
+      data: result.data,
     });
     yield put({
       type: ADD_POST_TO_ME,
@@ -78,13 +75,16 @@ function* addPost(action) {
   }
 }
 
+function removePostAPI(data) {
+  return axios.delete(`/post/${data}`);
+}
+
 function* removePost(action) {
   try {
-    yield delay(1000);
-
+    const result = yield call(removePostAPI, action.data);
     yield put({
       type: REMOVE_POST_SUCCESS,
-      data: action.data,
+      data: result.data,
     });
     yield put({
       type: REMOVE_POST_OF_ME,

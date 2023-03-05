@@ -174,23 +174,25 @@ const reducer = (state = initialState, action) => {
         draft.addPostLoading = false;
         draft.addPostDone = true;
         draft.mainPosts.unshift(action.data);
+        draft.imagePaths = [];
         break;
       case ADD_POST_FAIL:
         draft.addPostLoading = false;
         draft.addPostError = action.error;
         break;
+
       case REMOVE_POST_REQUEST:
         draft.removePostLoading = true;
         draft.removePostDone = false;
         draft.removePostError = null;
         break;
-
       case REMOVE_POST_SUCCESS:
         draft.removePostLoading = false;
         draft.removePostDone = true;
-        draft.mainPosts = draft.mainPosts.filter((v) => v.id !== action.data);
+        draft.mainPosts = draft.mainPosts.filter(
+          (v) => v.id !== action.data.PostId
+        );
         break;
-
       case REMOVE_POST_FAIL:
         draft.removePostLoading = false;
         draft.removePostError = action.error;
