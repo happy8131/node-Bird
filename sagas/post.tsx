@@ -17,24 +17,31 @@ import {
   ADD_POST_REQUEST,
   ADD_POST_SUCCESS,
   generateDummyPost,
+  LIKE_POST_FAILURE,
+  LIKE_POST_REQUEST,
+  LIKE_POST_SUCCESS,
   LOAD_POSTS_FAIL,
   LOAD_POSTS_REQUEST,
   LOAD_POSTS_SUCCESS,
   REMOVE_POST_FAIL,
   REMOVE_POST_REQUEST,
   REMOVE_POST_SUCCESS,
+  UNLIKE_POST_FAILURE,
+  UNLIKE_POST_REQUEST,
+  UNLIKE_POST_SUCCESS,
 } from "../reducers/post";
 import { ADD_POST_TO_ME, REMOVE_POST_OF_ME } from "../reducers/user";
 
-function LoadPostAPI(data) {
-  return axios.post("/api/post", data);
+function loadPostAPI(data) {
+  return axios.get("/posts", data);
 }
 
 function* loadPosts(action) {
   try {
+    const result = yield call(loadPostAPI, action.data);
     yield put({
       type: LOAD_POSTS_SUCCESS,
-      data: generateDummyPost(10),
+      data: result.data,
     });
   } catch (err) {
     yield put({
@@ -104,6 +111,42 @@ function* addComment(action) {
   }
 }
 
+function likePostAPI(data) {
+  return axios.patch(`/post/${data}/like`);
+}
+
+function* likePost(action) {
+  try {
+    const result = yield call(likePostAPI, action.data);
+
+    yield put({ type: LIKE_POST_SUCCESS, data: result.data });
+  } catch (err) {
+    console.log(err);
+    yield put({ type: LIKE_POST_FAILURE, data: err.response.data });
+  }
+}
+
+function unLikePostAPI(data) {
+  return axios.delete(`/post/${data}/like`);
+}
+
+function* unLikePost(action) {
+  try {
+    const result = yield call(unLikePostAPI, action.data);
+    yield put({ type: UNLIKE_POST_SUCCESS, data: result.data });
+  } catch (err) {
+    yield put({ type: UNLIKE_POST_FAILURE, data: err.response.data });
+  }
+}
+
+function* watchLikePost() {
+  yield takeLatest(LIKE_POST_REQUEST, likePost);
+}
+
+function* watchUnlikePost() {
+  yield takeLatest(UNLIKE_POST_REQUEST, unLikePost);
+}
+
 function* watchLoadPost() {
   yield throttle(5000, LOAD_POSTS_REQUEST, loadPosts);
 }
@@ -122,6 +165,8 @@ function* watchAddComment() {
 
 export default function* postSaga() {
   yield all([
+    fork(watchLikePost),
+    fork(watchUnlikePost),
     fork(watchAddPost),
     fork(watchLoadPost),
     fork(watchRemovePost),
