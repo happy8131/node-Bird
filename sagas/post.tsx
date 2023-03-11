@@ -16,16 +16,21 @@ import {
   ADD_POST_FAIL,
   ADD_POST_REQUEST,
   ADD_POST_SUCCESS,
-  generateDummyPost,
   LIKE_POST_FAILURE,
   LIKE_POST_REQUEST,
   LIKE_POST_SUCCESS,
   LOAD_POSTS_FAIL,
   LOAD_POSTS_REQUEST,
   LOAD_POSTS_SUCCESS,
+  LOAD_POST_FAILURE,
+  LOAD_POST_REQUEST,
+  LOAD_POST_SUCCESS,
   REMOVE_POST_FAIL,
   REMOVE_POST_REQUEST,
   REMOVE_POST_SUCCESS,
+  RETWEET_FAILURE,
+  RETWEET_REQUEST,
+  RETWEET_SUCCESS,
   UNLIKE_POST_FAILURE,
   UNLIKE_POST_REQUEST,
   UNLIKE_POST_SUCCESS,
@@ -34,6 +39,26 @@ import {
   UPLOAD_IMAGES_SUCCESS,
 } from "../reducers/post";
 import { ADD_POST_TO_ME, REMOVE_POST_OF_ME } from "../reducers/user";
+
+function retweetAPI(data) {
+  return axios.post(`/post/${data}/retweet`);
+}
+
+function* retweet(action) {
+  try {
+    const result = yield call(retweetAPI, action.data);
+    yield put({
+      type: RETWEET_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: RETWEET_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
 
 function uploadImagesAPI(data) {
   return axios.post("/post/images", data);
@@ -59,17 +84,37 @@ function loadPostAPI(data) {
   return axios.get("/posts", data);
 }
 
-function* loadPosts(action) {
+function* loadPost(action) {
   try {
     const result = yield call(loadPostAPI, action.data);
+    yield put({
+      type: LOAD_POST_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    yield put({
+      type: LOAD_POST_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+function loadPostsAPI(lastId) {
+  return axios.get(`/posts?lastId=${lastId || 0}`);
+}
+
+function* loadPosts(action) {
+  try {
+    const result = yield call(loadPostsAPI, action.lastId);
     yield put({
       type: LOAD_POSTS_SUCCESS,
       data: result.data,
     });
   } catch (err) {
+    console.error(err);
     yield put({
       type: LOAD_POSTS_FAIL,
-      data: err.response.data,
+      error: err.response.data,
     });
   }
 }
@@ -93,7 +138,7 @@ function* addPost(action) {
   } catch (err) {
     yield put({
       type: ADD_POST_FAIL,
-      data: err.response.data,
+      error: err.response.data,
     });
   }
 }
@@ -116,7 +161,7 @@ function* removePost(action) {
   } catch (err) {
     yield put({
       type: REMOVE_POST_FAIL,
-      data: err.response.data,
+      error: err.response.data,
     });
   }
 }
@@ -130,7 +175,7 @@ function* addComment(action) {
     const result = yield call(addCommentAPI, action.data);
     yield put({ type: ADD_COMMENT_SUCCESS, data: result.data });
   } catch (err) {
-    yield put({ type: ADD_COMMENT_FAIL, data: err.response.data });
+    yield put({ type: ADD_COMMENT_FAIL, error: err.response.data });
   }
 }
 
@@ -145,7 +190,7 @@ function* likePost(action) {
     yield put({ type: LIKE_POST_SUCCESS, data: result.data });
   } catch (err) {
     console.log(err);
-    yield put({ type: LIKE_POST_FAILURE, data: err.response.data });
+    yield put({ type: LIKE_POST_FAILURE, error: err.response.data });
   }
 }
 
@@ -158,8 +203,12 @@ function* unLikePost(action) {
     const result = yield call(unLikePostAPI, action.data);
     yield put({ type: UNLIKE_POST_SUCCESS, data: result.data });
   } catch (err) {
-    yield put({ type: UNLIKE_POST_FAILURE, data: err.response.data });
+    yield put({ type: UNLIKE_POST_FAILURE, error: err.response.data });
   }
+}
+
+function* watchRetweet() {
+  yield takeLatest(RETWEET_REQUEST, retweet);
 }
 
 function* watchUploadImages() {
@@ -175,7 +224,11 @@ function* watchUnlikePost() {
 }
 
 function* watchLoadPost() {
-  yield throttle(5000, LOAD_POSTS_REQUEST, loadPosts);
+  yield throttle(5000, LOAD_POST_REQUEST, loadPost);
+}
+
+function* watchLoadPosts() {
+  yield takeLatest(LOAD_POSTS_REQUEST, loadPosts);
 }
 
 function* watchAddPost() {
@@ -192,10 +245,12 @@ function* watchAddComment() {
 
 export default function* postSaga() {
   yield all([
+    fork(watchRetweet),
     fork(watchUploadImages),
     fork(watchLikePost),
     fork(watchUnlikePost),
     fork(watchAddPost),
+    fork(watchLoadPosts),
     fork(watchLoadPost),
     fork(watchRemovePost),
     fork(watchAddComment),
