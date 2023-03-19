@@ -8,9 +8,12 @@ import PostCard from "../components/PostCard";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { LOAD_POSTS_REQUEST } from "../reducers/post";
-import { LOAD_USER_REQUEST } from "../reducers/user";
+import { LOAD_MY_INFO_REQUEST } from "../reducers/user";
+import wrapper from "../store/configureStore";
+import { END } from "redux-saga";
+import axios from "axios";
 
-export default function Home() {
+function Home() {
   const dispatch = useDispatch();
   const { me } = useSelector((state) => state.user);
   const { mainPosts, hasMorePosts, loadPostLoading, retweetError } =
@@ -22,14 +25,14 @@ export default function Home() {
     }
   }, [retweetError]);
 
-  useEffect(() => {
-    dispatch({
-      type: LOAD_USER_REQUEST,
-    });
-    dispatch({
-      type: LOAD_POSTS_REQUEST,
-    });
-  }, []);
+  // useEffect(() => {
+  //   dispatch({
+  //     type: LOAD_MY_INFO_REQUEST,
+  //   });
+  //   dispatch({
+  //     type: LOAD_POSTS_REQUEST,
+  //   });
+  // }, []);
 
   useEffect(() => {
     function onScroll() {
@@ -62,3 +65,27 @@ export default function Home() {
     </AppLayout>
   );
 }
+
+export const getServerSideProps = wrapper.getServerSideProps(
+  (store) =>
+    async ({ req }) => {
+      const cookie = req ? req.headers.cookie : "";
+      axios.defaults.headers.Cookie = "";
+      if (req && cookie) {
+        axios.defaults.headers.Cookie = cookie;
+      }
+      store.dispatch({
+        type: LOAD_MY_INFO_REQUEST,
+      });
+
+      store.dispatch({
+        type: LOAD_POSTS_REQUEST,
+      });
+
+      // REQUEST 가 saga 에서 SUCCESS 될 때까지 기다려준다
+      store.dispatch(END);
+      await store.sagaTask?.toPromise();
+    }
+);
+
+export default Home;

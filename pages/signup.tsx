@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Button, Checkbox, Form, Input } from "antd";
+import axios from "axios";
 import Head from "next/head";
 import Router from "next/router";
 import { useCallback, useEffect, useState } from "react";
@@ -8,6 +9,7 @@ import { useDispatch } from "react-redux";
 import AppLayout from "../components/AppLayout";
 import useInput from "../hooks/useInput";
 import { SIGN_UP_REQUEST } from "../reducers/user";
+import wrapper from "../store/configureStore";
 
 const Signup = () => {
   const dispatch = useDispatch();
@@ -137,5 +139,23 @@ const Signup = () => {
     </AppLayout>
   );
 };
+
+export const getServerSideProps = wrapper.getServerSideProps(
+  (store) =>
+    async ({ req }) => {
+      const cookie = req ? req.headers.cookie : "";
+      axios.defaults.headers.Cookie = "";
+      if (req && cookie) {
+        axios.defaults.headers.Cookie = cookie;
+      }
+      store.dispatch({
+        type: LOAD_MY_INFO_REQUEST,
+      });
+
+      // REQUEST 가 saga 에서 SUCCESS 될 때까지 기다려준다
+      store.dispatch(END);
+      await store.sagaTask?.toPromise();
+    }
+);
 
 export default Signup;
