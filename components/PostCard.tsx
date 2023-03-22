@@ -27,7 +27,6 @@ const PostCard = ({ post }) => {
   );
   const [commentFormOpened, setCommentFormOpened] = useState(false);
   const id = useSelector((state) => state.user.me?.id);
-  const liked = post.Likers.find((v) => v.id === id);
 
   const onLike = useCallback(() => {
     if (!id) {
@@ -74,7 +73,7 @@ const PostCard = ({ post }) => {
       data: post.id,
     });
   }, [id]);
-
+  const liked = post?.Likers.find((v) => v.id === id);
   return (
     <div style={{ marginBottom: 20 }}>
       <Card
@@ -116,14 +115,14 @@ const PostCard = ({ post }) => {
           </Popover>,
         ]}
         title={
-          post.RetweetId ? `${post.User.nickname}님이 리트윗 하셨습니다` : null
+          post?.RetweetId ? `${post.User.nickname}님이 리트윗 하셨습니다` : null
         }
         extra={id && <FollowButton post={post} />}
       >
-        {post.RetweetId && post.Retweet ? (
+        {post?.RetweetId && post.Retweet ? (
           <Card
             cover={
-              post.Retweet?.Images[0] && (
+              post?.Retweet?.Images[0] && (
                 <PostImages images={post.Retweet.Images} />
               )
             }
