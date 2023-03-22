@@ -81,7 +81,7 @@ function* uploadImages(action) {
 }
 
 function loadPostAPI(data) {
-  return axios.get("/posts", data);
+  return axios.get(`/post/${data}`);
 }
 
 function* loadPost(action) {
@@ -224,7 +224,7 @@ function* watchUnlikePost() {
 }
 
 function* watchLoadPost() {
-  yield throttle(5000, LOAD_POST_REQUEST, loadPost);
+  yield takeLatest(LOAD_POST_REQUEST, loadPost);
 }
 
 function* watchLoadPosts() {
