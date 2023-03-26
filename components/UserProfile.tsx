@@ -17,23 +17,23 @@ const UserProfile = () => {
           <div key="1">
             짹짹
             <br />
-            {me.Posts.length}
+            {me.Posts?.length}
           </div>,
           <div key="2">
             팔로잉
             <br />
-            {me.Followings.length}
+            {me.Followings?.length}
           </div>,
           <div key="3">
             팔로우
             <br />
-            {me.Followers.length}
+            {me.Followers?.length}
           </div>,
         ]}
       >
         <Card.Meta
-          avatar={<Avatar>{me.nickname[0]}</Avatar>}
-          title={me.nickname}
+          avatar={<Avatar>{me?.nickname[0]}</Avatar>}
+          title={me?.nickname}
         />
         <Button onClick={onLogOut} loading={logOutLoading}>
           로그아웃
